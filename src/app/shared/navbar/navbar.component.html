@@ -1,1 +1,106 @@
-<p>navbar works!</p>
+<nav class="navbar">
+
+  <div class="navbar-header">
+
+    <a
+      class="brand"
+      routerLink="/dashboard/productos"
+      (click)="cerrarMenu()"
+    >
+      Examen TAP
+    </a>
+
+    <button
+      type="button"
+      class="menu-button"
+      aria-label="Abrir menú"
+      [attr.aria-expanded]="menuAbierto"
+      (click)="cambiarMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+
+  <div
+    class="nav-links"
+    [class.open]="menuAbierto"
+  >
+
+    <a
+      routerLink="/dashboard/productos"
+      routerLinkActive="active"
+      (click)="cerrarMenu()"
+    >
+      Productos
+    </a>
+
+    <a
+      routerLink="/dashboard/usuarios"
+      routerLinkActive="active"
+      (click)="cerrarMenu()"
+    >
+      Usuarios
+    </a>
+
+    <a
+      routerLink="/dashboard/perfiles"
+      routerLinkActive="active"
+      (click)="cerrarMenu()"
+    >
+      Perfiles
+    </a>
+
+    <a
+      routerLink="/dashboard/permisos"
+      routerLinkActive="active"
+      (click)="cerrarMenu()"
+    >
+      Permisos
+    </a>
+
+  </div>
+
+  <div
+    class="user-section"
+    [class.open]="menuAbierto"
+  >
+
+    <div
+      class="user-photo"
+      *ngIf="usuario?.SFotoPerfil && mostrarFoto; else userInitial"
+    >
+      <img
+        [src]="usuario?.SFotoPerfil"
+        [alt]="usuario?.SNombre || 'Usuario'"
+        (error)="ocultarFoto()"
+      >
+    </div>
+
+    <ng-template #userInitial>
+      <div class="user-initial">
+        {{ obtenerInicial() }}
+      </div>
+    </ng-template>
+
+    <div class="user-data">
+
+      <span class="user-name">
+        {{ usuario?.SNombre || 'Usuario' }}
+      </span>
+
+      <a
+        class="profile-button"
+        routerLink="/dashboard/mi-perfil"
+        (click)="cerrarMenu()"
+      >
+        Mi perfil
+      </a>
+
+    </div>
+
+  </div>
+
+</nav>

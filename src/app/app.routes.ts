@@ -15,6 +15,25 @@ export const routes: Routes = [
       ).then(component => component.RecuperarPasswordComponent)
   },
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard.component')
+        .then(component => component.DashboardComponent),
+    children: [
+      {
+        path: 'productos',
+        loadComponent: () =>
+          import('./pages/productos/productos.component')
+            .then(component => component.ProductosComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'productos',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'

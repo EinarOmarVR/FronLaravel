@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f6f8;
+}
+
+.dashboard-content {
+  width: 100%;
+  flex: 1;
+  padding: 24px;
+  box-sizing: border-box;
+}
