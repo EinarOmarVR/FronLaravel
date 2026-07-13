@@ -1,1 +1,87 @@
-<p>login works!</p>
+<div class="login-container">
+
+  <div class="login-card">
+
+    <h1>Iniciar sesión</h1>
+    <p class="subtitle">Ingresa tus datos para continuar</p>
+
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="iniciarSesion()"
+    >
+
+      <div class="form-group">
+
+        <label for="SUsuario">Usuario</label>
+
+        <input
+          id="SUsuario"
+          type="text"
+          formControlName="SUsuario"
+          placeholder="Ingresa tu usuario"
+          autocomplete="username"
+        >
+
+        @if (
+          loginForm.controls['SUsuario'].invalid &&
+          loginForm.controls['SUsuario'].touched
+        ) {
+          <small class="validation-error">
+            El usuario es obligatorio.
+          </small>
+        }
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="SPassword">Contraseña</label>
+
+        <input
+          id="SPassword"
+          type="password"
+          formControlName="SPassword"
+          placeholder="Ingresa tu contraseña"
+          autocomplete="current-password"
+        >
+
+        @if (
+          loginForm.controls['SPassword'].invalid &&
+          loginForm.controls['SPassword'].touched
+        ) {
+          <small class="validation-error">
+            La contraseña es obligatoria.
+          </small>
+        }
+
+      </div>
+
+      @if (mensajeError) {
+        <div class="api-error">
+          {{ mensajeError }}
+        </div>
+      }
+
+      <button
+        type="submit"
+        [disabled]="cargando"
+      >
+        @if (cargando) {
+          Iniciando sesión...
+        } @else {
+          Iniciar sesión
+        }
+      </button>
+
+    </form>
+
+    <a
+      class="recover-link"
+      routerLink="/recuperar-password"
+    >
+      ¿Olvidaste tu contraseña?
+    </a>
+
+  </div>
+
+</div>

@@ -1,1 +1,63 @@
-<p>footer works!</p>
+<footer class="footer">
+
+  <div class="footer-content">
+
+    <div class="footer-information">
+
+      <strong>
+        {{ nombre }}
+      </strong>
+
+      <span>
+        {{ puesto }}
+      </span>
+
+    </div>
+
+    <div class="footer-links">
+
+      <a
+        [href]="'tel:+' + telefono"
+        title="Llamar"
+      >
+        <i class="bi bi-telephone-fill"></i>
+        {{ telefonoTexto }}
+      </a>
+
+      <a
+        [href]="'mailto:' + correo"
+        title="Enviar correo"
+      >
+        <i class="bi bi-envelope-fill"></i>
+        {{ correo }}
+      </a>
+
+      <a
+        [href]="linkedin"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Abrir LinkedIn"
+      >
+        <i class="bi bi-linkedin"></i>
+        LinkedIn
+      </a>
+
+      <a
+        [href]="github"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Abrir GitHub"
+      >
+        <i class="bi bi-github"></i>
+        GitHub
+      </a>
+
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © {{ anioActual }} {{ nombre }}. Todos los derechos reservados.
+  </div>
+
+</footer>
