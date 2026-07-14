@@ -1,1 +1,308 @@
-<p>productos works!</p>
+<section class="products-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Administración de productos</h1>
+      <p>
+        Crea, consulta, actualiza y elimina productos.
+      </p>
+    </div>
+
+    <div class="page-actions">
+
+    <button
+        type="button"
+        class="pdf-button"
+        [disabled]="cargando || productos.length === 0"
+        (click)="exportarPdf()"
+    >
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+        Exportar PDF
+    </button>
+
+    <button
+        type="button"
+        class="excel-button"
+        [disabled]="cargando || productos.length === 0"
+        (click)="exportarExcel()"
+    >
+        <i class="bi bi-file-earmark-excel-fill"></i>
+        Exportar Excel
+    </button>
+
+    <button
+        type="button"
+        class="refresh-button"
+        [disabled]="cargando"
+        (click)="cargarProductos()"
+    >
+        <i class="bi bi-arrow-clockwise"></i>
+        Actualizar tabla
+    </button>
+
+    </div>
+  </div>
+
+  <div
+    class="success-message"
+    *ngIf="mensajeExito"
+  >
+    {{ mensajeExito }}
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="mensajeError"
+  >
+    {{ mensajeError }}
+  </div>
+
+  <div class="products-layout">
+
+    <div class="form-card">
+
+      <h2>
+        {{ productoEditando ? 'Editar producto' : 'Nuevo producto' }}
+      </h2>
+
+      <div
+        class="editing-code"
+        *ngIf="productoEditando"
+      >
+        Código: {{ productoEditando.SCodigo }}
+      </div>
+
+      <form
+        [formGroup]="productoForm"
+        (ngSubmit)="guardarProducto()"
+      >
+
+        <div class="form-group">
+
+          <label for="SProducto">
+            Producto
+          </label>
+
+          <input
+            id="SProducto"
+            type="text"
+            formControlName="SProducto"
+            placeholder="Nombre del producto"
+          >
+
+          <small
+            class="validation-error"
+            *ngIf="
+              productoForm.controls['SProducto'].invalid &&
+              productoForm.controls['SProducto'].touched
+            "
+          >
+            El nombre del producto es obligatorio.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="SMarca">
+            Marca
+          </label>
+
+          <input
+            id="SMarca"
+            type="text"
+            formControlName="SMarca"
+            placeholder="Marca del producto"
+          >
+
+          <small
+            class="validation-error"
+            *ngIf="
+              productoForm.controls['SMarca'].invalid &&
+              productoForm.controls['SMarca'].touched
+            "
+          >
+            La marca es obligatoria.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="DPrecio">
+            Precio
+          </label>
+
+          <input
+            id="DPrecio"
+            type="number"
+            formControlName="DPrecio"
+            placeholder="0.00"
+            min="1"
+            max="999"
+            step="0.01"
+          >
+
+          <small
+            class="validation-error"
+            *ngIf="
+              productoForm.controls['DPrecio'].invalid &&
+              productoForm.controls['DPrecio'].touched
+            "
+          >
+            El precio debe estar entre $1 y $999.
+          </small>
+
+        </div>
+
+        <div class="form-actions">
+
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="guardando"
+          >
+            <i
+              class="bi"
+              [class.bi-plus-circle]="!productoEditando"
+              [class.bi-pencil-square]="productoEditando"
+            ></i>
+
+            {{
+              guardando
+                ? 'Guardando...'
+                : productoEditando
+                  ? 'Actualizar'
+                  : 'Guardar'
+            }}
+          </button>
+
+          <button
+            type="button"
+            class="cancel-button"
+            *ngIf="productoEditando"
+            [disabled]="guardando"
+            (click)="limpiarFormulario()"
+          >
+            Cancelar
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+    <div class="table-card">
+
+      <div class="table-header">
+
+        <h2>Productos registrados</h2>
+
+        <span class="product-count">
+          {{ productos.length }} productos
+        </span>
+
+      </div>
+
+      <div
+        class="loading-message"
+        *ngIf="cargando"
+      >
+        Cargando productos...
+      </div>
+
+      <div
+        class="empty-message"
+        *ngIf="!cargando && productos.length === 0"
+      >
+        No hay productos registrados.
+      </div>
+
+      <div
+        class="table-responsive"
+        *ngIf="!cargando && productos.length > 0"
+      >
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Producto</th>
+              <th>Marca</th>
+              <th>Precio</th>
+              <th>Creación</th>
+              <th>Modificación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let producto of productos">
+
+              <td data-label="Código">
+                {{ producto.SCodigo }}
+              </td>
+
+              <td data-label="Producto">
+                {{ producto.SProducto }}
+              </td>
+
+              <td data-label="Marca">
+                {{ producto.SMarca }}
+              </td>
+
+              <td data-label="Precio">
+                {{ producto.DPrecio | currency:'MXN':'symbol':'1.2-2' }}
+              </td>
+
+              <td data-label="Creación">
+                {{ producto.TFechaCap || '-' }}
+              </td>
+
+              <td data-label="Modificación">
+                {{ producto.TFechaMod || '-' }}
+              </td>
+
+              <td
+                class="actions"
+                data-label="Acciones"
+              >
+
+                <button
+                  type="button"
+                  class="edit-button"
+                  title="Editar producto"
+                  (click)="seleccionarProducto(producto)"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  title="Eliminar producto"
+                  (click)="eliminarProducto(producto)"
+                >
+                  <i class="bi bi-trash-fill"></i>
+                  Eliminar
+                </button>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
