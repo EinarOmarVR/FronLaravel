@@ -1,1 +1,357 @@
-<p>permisos works!</p>
+<section class="permissions-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Administración de permisos</h1>
+
+      <p>
+        Consulta y administra los permisos del sistema.
+      </p>
+    </div>
+
+    <div class="page-actions">
+
+      <button
+        type="button"
+        class="pdf-button"
+        [disabled]="cargando || permisos.length === 0"
+        (click)="exportarPdf()"
+      >
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+        Exportar PDF
+      </button>
+
+      <button
+        type="button"
+        class="excel-button"
+        [disabled]="cargando || permisos.length === 0"
+        (click)="exportarExcel()"
+      >
+        <i class="bi bi-file-earmark-excel-fill"></i>
+        Exportar Excel
+      </button>
+
+      <button
+        type="button"
+        class="refresh-button"
+        [disabled]="cargando"
+        (click)="cargarPermisos()"
+      >
+        <i class="bi bi-arrow-clockwise"></i>
+        Actualizar tabla
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    class="success-message"
+    *ngIf="mensajeExito"
+  >
+    {{ mensajeExito }}
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="mensajeError"
+  >
+    {{ mensajeError }}
+  </div>
+
+  <div
+    class="permissions-layout"
+    [class.only-table]="!puedeEditar"
+  >
+
+    <!-- Formulario visible con PERMISSION_ADDUPD -->
+    <div
+      class="form-card"
+      *ngIf="puedeEditar"
+    >
+
+      <h2>
+        {{ permisoEditando ? 'Editar permiso' : 'Nuevo permiso' }}
+      </h2>
+
+      <form
+        [formGroup]="permisoForm"
+        (ngSubmit)="guardarPermiso()"
+      >
+
+        <div class="form-group">
+
+          <label for="SCodigo">
+            Código
+          </label>
+
+          <input
+            id="SCodigo"
+            type="text"
+            formControlName="SCodigo"
+            placeholder="Ejemplo: PROD_VIEW"
+          >
+
+          <small
+            class="help-text"
+          >
+            Escribe un código único, por ejemplo USER_VIEW.
+          </small>
+
+          <small
+            class="validation-error"
+            *ngIf="
+              permisoForm.controls['SCodigo'].invalid &&
+              permisoForm.controls['SCodigo'].touched
+            "
+          >
+            El código es obligatorio y permite máximo 100 caracteres.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="SPermiso">
+            Nombre del permiso
+          </label>
+
+          <input
+            id="SPermiso"
+            type="text"
+            formControlName="SPermiso"
+            placeholder="Ejemplo: Consultar productos"
+          >
+
+          <small
+            class="validation-error"
+            *ngIf="
+              permisoForm.controls['SPermiso'].invalid &&
+              permisoForm.controls['SPermiso'].touched
+            "
+          >
+            El nombre del permiso es obligatorio.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="SModulo">
+            Módulo
+          </label>
+
+          <input
+            id="SModulo"
+            type="text"
+            formControlName="SModulo"
+            placeholder="Ejemplo: PRODUCTOS"
+          >
+
+          <small
+            class="validation-error"
+            *ngIf="
+              permisoForm.controls['SModulo'].invalid &&
+              permisoForm.controls['SModulo'].touched
+            "
+          >
+            El módulo es obligatorio.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="SDescripcion">
+            Descripción
+          </label>
+
+          <textarea
+            id="SDescripcion"
+            formControlName="SDescripcion"
+            placeholder="Describe qué permite realizar"
+            rows="4"
+          ></textarea>
+
+          <div class="description-footer">
+
+            <small class="help-text">
+              Campo opcional.
+            </small>
+
+            <small>
+              {{
+                permisoForm.controls['SDescripcion'].value?.length || 0
+              }}/500
+            </small>
+
+          </div>
+
+          <small
+            class="validation-error"
+            *ngIf="
+              permisoForm.controls['SDescripcion'].hasError('maxlength') &&
+              permisoForm.controls['SDescripcion'].touched
+            "
+          >
+            La descripción permite máximo 500 caracteres.
+          </small>
+
+        </div>
+
+        <div class="form-actions">
+
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="guardando"
+          >
+            <i
+              class="bi"
+              [class.bi-plus-circle]="!permisoEditando"
+              [class.bi-pencil-square]="permisoEditando"
+            ></i>
+
+            {{
+              guardando
+                ? 'Guardando...'
+                : permisoEditando
+                  ? 'Actualizar'
+                  : 'Guardar'
+            }}
+          </button>
+
+          <button
+            type="button"
+            class="cancel-button"
+            *ngIf="permisoEditando"
+            [disabled]="guardando"
+            (click)="limpiarFormulario()"
+          >
+            Cancelar
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+    <div class="table-card">
+
+      <div class="table-header">
+
+        <h2>Permisos registrados</h2>
+
+        <span class="permission-count">
+          {{ permisos.length }} permisos
+        </span>
+
+      </div>
+
+      <div
+        class="loading-message"
+        *ngIf="cargando"
+      >
+        Cargando permisos...
+      </div>
+
+      <div
+        class="empty-message"
+        *ngIf="!cargando && permisos.length === 0"
+      >
+        No hay permisos registrados.
+      </div>
+
+      <div
+        class="table-responsive"
+        *ngIf="!cargando && permisos.length > 0"
+      >
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Código</th>
+              <th>Permiso</th>
+              <th>Módulo</th>
+              <th>Descripción</th>
+              <th>Creación</th>
+              <th>Modificación</th>
+
+              <th *ngIf="puedeEditar || puedeEliminar">
+                Acciones
+              </th>
+            </tr>
+
+          </thead>
+
+         <tbody>
+            <tr *ngFor="let permiso of permisos">
+                <td data-label="Código">
+                <span class="code-badge">
+                    {{ permiso.SCodigo }}
+                </span>
+                </td>
+
+                <td data-label="Permiso">
+                {{ permiso.SPermiso }}
+                </td>
+
+                <td data-label="Módulo">
+                {{ permiso.SModulo }}
+                </td>
+
+                <td
+                data-label="Descripción"
+                class="description-cell"
+                >
+                {{ permiso.SDescripcion || 'Sin descripción' }}
+                </td>
+
+                <td data-label="Creación">
+                {{ permiso.TFechaCap || '-' }}
+                </td>
+
+                <td data-label="Modificación">
+                {{ permiso.TFechaMod || '-' }}
+                </td>
+
+                <td
+                data-label="Acciones"
+                class="actions"
+                >
+                <button
+                    *ngIf="puedeEditar"
+                    type="button"
+                    class="edit-button"
+                    (click)="seleccionarPermiso(permiso)"
+                >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Editar
+                </button>
+
+                <button
+                    *ngIf="puedeEliminar"
+                    type="button"
+                    class="delete-button"
+                    (click)="eliminarPermiso(permiso)"
+                >
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                </button>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

@@ -1,13 +1,11 @@
 export interface Usuario {
-    
-    id:string;
-    SCodigo:string;
-    SNombre:string;
-    SUsuario:string;
-    STelefono:string;
-    SFotoPerfil:string;
-    SIDPerfil:string;
-    TFechaCap:string;
-    TFechaMod:string;
-
+  id: string;
+  SCodigo: string;
+  SNombre: string;
+  SUsuario: string;
+  STelefono: string | null;
+  SFotoPerfil: string | null;
+  SIDPerfil: string;
+  TFechaCap: string | null;
+  TFechaMod: string | null;
 }

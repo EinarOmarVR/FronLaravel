@@ -1,17 +1,29 @@
 :host {
   display: block;
+  min-width: 0;
 }
 
 .dashboard-layout {
+  width: 100%;
   min-height: 100vh;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
   background-color: #f4f6f8;
 }
 
 .dashboard-content {
   width: 100%;
+  min-width: 0;
   flex: 1;
-  padding: 24px;
+  padding: 20px;
+  overflow-x: hidden;
   box-sizing: border-box;
+}
+
+@media (max-width: 650px) {
+  .dashboard-content {
+    padding: 16px;
+  }
 }

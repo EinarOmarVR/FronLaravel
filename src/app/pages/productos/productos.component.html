@@ -1,46 +1,49 @@
 <section class="products-page">
 
   <div class="page-header">
+
     <div>
       <h1>Administración de productos</h1>
+
       <p>
-        Crea, consulta, actualiza y elimina productos.
+        Consulta y administra los productos registrados.
       </p>
     </div>
 
     <div class="page-actions">
 
-    <button
+      <button
         type="button"
         class="pdf-button"
         [disabled]="cargando || productos.length === 0"
         (click)="exportarPdf()"
-    >
+      >
         <i class="bi bi-file-earmark-pdf-fill"></i>
         Exportar PDF
-    </button>
+      </button>
 
-    <button
+      <button
         type="button"
         class="excel-button"
         [disabled]="cargando || productos.length === 0"
         (click)="exportarExcel()"
-    >
+      >
         <i class="bi bi-file-earmark-excel-fill"></i>
         Exportar Excel
-    </button>
+      </button>
 
-    <button
+      <button
         type="button"
         class="refresh-button"
         [disabled]="cargando"
         (click)="cargarProductos()"
-    >
+      >
         <i class="bi bi-arrow-clockwise"></i>
         Actualizar tabla
-    </button>
+      </button>
 
     </div>
+
   </div>
 
   <div
@@ -57,9 +60,16 @@
     {{ mensajeError }}
   </div>
 
-  <div class="products-layout">
+  <div
+    class="products-layout"
+    [class.only-table]="!puedeEditar"
+  >
 
-    <div class="form-card">
+    <!-- Solo aparece con el permiso PROD_AddUpd -->
+    <div
+      class="form-card"
+      *ngIf="puedeEditar"
+    >
 
       <h2>
         {{ productoEditando ? 'Editar producto' : 'Nuevo producto' }}
@@ -227,6 +237,7 @@
         <table>
 
           <thead>
+
             <tr>
               <th>Código</th>
               <th>Producto</th>
@@ -234,68 +245,71 @@
               <th>Precio</th>
               <th>Creación</th>
               <th>Modificación</th>
-              <th>Acciones</th>
+
+              <th *ngIf="puedeEditar || puedeEliminar">
+                Acciones
+              </th>
             </tr>
+
           </thead>
 
-          <tbody>
-
+         <tbody>
             <tr *ngFor="let producto of productos">
+                <td data-label="Código">
+                <span class="code-badge">
+                    {{ producto.SCodigo }}
+                </span>
+                </td>
 
-              <td data-label="Código">
-                {{ producto.SCodigo }}
-              </td>
-
-              <td data-label="Producto">
+                <td data-label="Producto">
                 {{ producto.SProducto }}
-              </td>
+                </td>
 
-              <td data-label="Marca">
+                <td data-label="Marca">
                 {{ producto.SMarca }}
-              </td>
+                </td>
 
-              <td data-label="Precio">
+                <td
+                data-label="Precio"
+                class="price-cell"
+                >
                 {{ producto.DPrecio | currency:'MXN':'symbol':'1.2-2' }}
-              </td>
+                </td>
 
-              <td data-label="Creación">
+                <td data-label="Creación">
                 {{ producto.TFechaCap || '-' }}
-              </td>
+                </td>
 
-              <td data-label="Modificación">
+                <td data-label="Modificación">
                 {{ producto.TFechaMod || '-' }}
-              </td>
+                </td>
 
-              <td
-                class="actions"
+                <td
                 data-label="Acciones"
-              >
-
-                <button
-                  type="button"
-                  class="edit-button"
-                  title="Editar producto"
-                  (click)="seleccionarProducto(producto)"
+                class="actions"
                 >
-                  <i class="bi bi-pencil-square"></i>
-                  Editar
+                <button
+                    *ngIf="puedeEditar"
+                    type="button"
+                    class="edit-button"
+                    (click)="seleccionarProducto(producto)"
+                >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Editar
                 </button>
 
                 <button
-                  type="button"
-                  class="delete-button"
-                  title="Eliminar producto"
-                  (click)="eliminarProducto(producto)"
+                    *ngIf="puedeEliminar"
+                    type="button"
+                    class="delete-button"
+                    (click)="eliminarProducto(producto)"
                 >
-                  <i class="bi bi-trash-fill"></i>
-                  Eliminar
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
                 </button>
-
-              </td>
-
+                </td>
             </tr>
-
-          </tbody>
+            </tbody>
 
         </table>
 

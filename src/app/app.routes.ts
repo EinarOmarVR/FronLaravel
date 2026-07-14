@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { permissionGuard } from './core/guards/permission.guard';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -12,7 +14,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import(
         './pages/auth/recuperar-password/recuperar-password.component'
-      ).then(component => component.RecuperarPasswordComponent)
+      ).then(
+        component => component.RecuperarPasswordComponent
+      )
   },
   {
     path: 'dashboard',
@@ -22,14 +26,43 @@ export const routes: Routes = [
     children: [
       {
         path: 'productos',
+        canActivate: [permissionGuard],
+        data: {
+          permiso: 'PROD_VIEW'
+        },
         loadComponent: () =>
           import('./pages/productos/productos.component')
             .then(component => component.ProductosComponent)
       },
       {
-        path: '',
-        redirectTo: 'productos',
-        pathMatch: 'full'
+        path: 'permisos',
+        canActivate: [permissionGuard],
+        data: {
+          permiso: 'PERMISSION_VIEW'
+        },
+        loadComponent: () =>
+          import('./pages/permisos/permisos.component')
+            .then(component => component.PermisosComponent)
+      },
+      {
+        path: 'perfiles',
+        canActivate: [permissionGuard],
+        data: {
+          permiso: 'PROFILE_VIEW'
+        },
+        loadComponent: () =>
+          import('./pages/perfiles/perfiles.component')
+            .then(component => component.PerfilesComponent)
+      },
+      {
+        path: 'usuarios',
+        canActivate: [permissionGuard],
+        data: {
+          permiso: 'USER_VIEW'
+        },
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios.component')
+            .then(component => component.UsuariosComponent)
       }
     ]
   },

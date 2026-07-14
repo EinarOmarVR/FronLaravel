@@ -30,6 +30,7 @@
   >
 
     <a
+     *ngIf="puedeVerProductos"
       routerLink="/dashboard/productos"
       routerLinkActive="active"
       (click)="cerrarMenu()"
@@ -38,6 +39,7 @@
     </a>
 
     <a
+     *ngIf="puedeVerUsuarios"
       routerLink="/dashboard/usuarios"
       routerLinkActive="active"
       (click)="cerrarMenu()"
@@ -46,6 +48,7 @@
     </a>
 
     <a
+      *ngIf="puedeVerPerfiles"
       routerLink="/dashboard/perfiles"
       routerLinkActive="active"
       (click)="cerrarMenu()"
@@ -54,6 +57,7 @@
     </a>
 
     <a
+      *ngIf="puedeVerPermisos"
       routerLink="/dashboard/permisos"
       routerLinkActive="active"
       (click)="cerrarMenu()"

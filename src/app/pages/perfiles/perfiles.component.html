@@ -1,1 +1,509 @@
-<p>perfiles works!</p>
+<section class="profiles-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Administración de perfiles</h1>
+
+      <p>
+        Crea perfiles y asigna los permisos correspondientes.
+      </p>
+    </div>
+
+    <div class="page-actions">
+
+      <button
+        type="button"
+        class="pdf-button"
+        [disabled]="cargando || perfiles.length === 0"
+        (click)="exportarPdf()"
+      >
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+        Exportar PDF
+      </button>
+
+      <button
+        type="button"
+        class="excel-button"
+        [disabled]="cargando || perfiles.length === 0"
+        (click)="exportarExcel()"
+      >
+        <i class="bi bi-file-earmark-excel-fill"></i>
+        Exportar Excel
+      </button>
+
+      <button
+        type="button"
+        class="refresh-button"
+        [disabled]="cargando"
+        (click)="cargarPerfiles()"
+      >
+        <i class="bi bi-arrow-clockwise"></i>
+        Actualizar tabla
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    class="success-message"
+    *ngIf="mensajeExito"
+  >
+    {{ mensajeExito }}
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="mensajeError"
+  >
+    {{ mensajeError }}
+  </div>
+
+  <div
+    class="profiles-layout"
+    [class.only-table]="!puedeEditar"
+  >
+
+    <!-- Visible con PROFILE_ADDUPD -->
+    <div
+      class="form-card"
+      *ngIf="puedeEditar"
+    >
+
+      <h2>
+        {{ perfilEditando ? 'Editar perfil' : 'Nuevo perfil' }}
+      </h2>
+
+      <form
+        [formGroup]="perfilForm"
+        (ngSubmit)="guardarPerfil()"
+      >
+
+        <div class="form-group">
+
+          <label for="SCodigo">
+            Código
+          </label>
+
+          <input
+            id="SCodigo"
+            type="text"
+            formControlName="SCodigo"
+            placeholder="Ejemplo: PER_SUPERVISOR"
+          >
+
+          <small class="help-text">
+            Escribe un código único para el perfil.
+          </small>
+
+          <small
+            class="validation-error"
+            *ngIf="
+              perfilForm.controls['SCodigo'].invalid &&
+              perfilForm.controls['SCodigo'].touched
+            "
+          >
+            El código es obligatorio y permite máximo 100 caracteres.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="SPerfil">
+            Nombre del perfil
+          </label>
+
+          <input
+            id="SPerfil"
+            type="text"
+            formControlName="SPerfil"
+            placeholder="Ejemplo: Supervisor general"
+          >
+
+          <small
+            class="validation-error"
+            *ngIf="
+              perfilForm.controls['SPerfil'].invalid &&
+              perfilForm.controls['SPerfil'].touched
+            "
+          >
+            El nombre del perfil es obligatorio.
+          </small>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="SDescripcion">
+            Descripción
+          </label>
+
+          <textarea
+            id="SDescripcion"
+            formControlName="SDescripcion"
+            placeholder="Describe las funciones del perfil"
+            rows="3"
+          ></textarea>
+
+          <div class="description-footer">
+
+            <small class="help-text">
+              Campo opcional.
+            </small>
+
+            <small>
+              {{
+                perfilForm.controls['SDescripcion'].value?.length || 0
+              }}/500
+            </small>
+
+          </div>
+
+          <small
+            class="validation-error"
+            *ngIf="
+              perfilForm.controls['SDescripcion'].hasError('maxlength') &&
+              perfilForm.controls['SDescripcion'].touched
+            "
+          >
+            La descripción permite máximo 500 caracteres.
+          </small>
+
+        </div>
+
+        <div class="form-group permissions-field">
+
+          <label>
+            Permisos
+          </label>
+
+          <button
+            type="button"
+            class="permissions-selector"
+            [class.open]="menuPermisosAbierto"
+            (click)="cambiarMenuPermisos()"
+          >
+
+            <span>
+              <i class="bi bi-shield-check"></i>
+
+              {{
+                permisosSeleccionados.length === 0
+                  ? 'Seleccionar permisos'
+                  : permisosSeleccionados.length + ' permisos seleccionados'
+              }}
+            </span>
+
+            <i
+              class="bi"
+              [class.bi-chevron-down]="!menuPermisosAbierto"
+              [class.bi-chevron-up]="menuPermisosAbierto"
+            ></i>
+
+          </button>
+
+          <div
+            class="permissions-dropdown"
+            *ngIf="menuPermisosAbierto"
+          >
+
+            <div class="permissions-search">
+
+              <i class="bi bi-search"></i>
+
+              <input
+                type="text"
+                placeholder="Buscar por código, permiso o módulo"
+                [value]="busquedaPermiso"
+                (input)="actualizarBusqueda($event)"
+              >
+
+            </div>
+
+            <div class="permissions-tools">
+
+              <button
+                type="button"
+                (click)="seleccionarTodosPermisos()"
+              >
+                Seleccionar todos
+              </button>
+
+              <button
+                type="button"
+                (click)="limpiarPermisos()"
+              >
+                Limpiar
+              </button>
+
+            </div>
+
+            <div
+              class="permissions-loading"
+              *ngIf="cargandoPermisos"
+            >
+              Cargando permisos...
+            </div>
+
+            <div
+              class="permissions-empty"
+              *ngIf="
+                !cargandoPermisos &&
+                permisosFiltrados.length === 0
+              "
+            >
+              No se encontraron permisos.
+            </div>
+
+            <div
+              class="permissions-list"
+              *ngIf="
+                !cargandoPermisos &&
+                permisosFiltrados.length > 0
+              "
+            >
+
+              <label
+                class="permission-option"
+                *ngFor="let permiso of permisosFiltrados"
+              >
+
+                <input
+                  type="checkbox"
+                  [checked]="estaSeleccionado(permiso.id)"
+                  (change)="cambiarPermiso(permiso.id)"
+                >
+
+                <span class="permission-check"></span>
+
+                <span class="permission-information">
+
+                  <strong>
+                    {{ permiso.SCodigo }}
+                  </strong>
+
+                  <span>
+                    {{ permiso.SPermiso }}
+                  </span>
+
+                  <small>
+                    {{ permiso.SModulo }}
+                  </small>
+
+                </span>
+
+              </label>
+
+            </div>
+
+            <div class="permissions-dropdown-footer">
+
+              <span>
+                {{ permisosSeleccionados.length }} seleccionados
+              </span>
+
+              <button
+                type="button"
+                (click)="cerrarMenuPermisos()"
+              >
+                Listo
+              </button>
+
+            </div>
+
+          </div>
+
+          <div
+            class="selected-permissions"
+            *ngIf="permisosSeleccionados.length > 0"
+          >
+
+            <span
+              class="selected-permission"
+              *ngFor="let permiso of permisos"
+              [hidden]="!estaSeleccionado(permiso.id)"
+            >
+              {{ permiso.SCodigo }}
+
+              <button
+                type="button"
+                title="Quitar permiso"
+                (click)="cambiarPermiso(permiso.id)"
+              >
+                <i class="bi bi-x"></i>
+              </button>
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="guardando"
+          >
+            <i
+              class="bi"
+              [class.bi-plus-circle]="!perfilEditando"
+              [class.bi-pencil-square]="perfilEditando"
+            ></i>
+
+            {{
+              guardando
+                ? 'Guardando...'
+                : perfilEditando
+                  ? 'Actualizar'
+                  : 'Guardar'
+            }}
+          </button>
+
+          <button
+            type="button"
+            class="cancel-button"
+            *ngIf="perfilEditando"
+            [disabled]="guardando"
+            (click)="limpiarFormulario()"
+          >
+            Cancelar
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+    <div class="table-card">
+
+      <div class="table-header">
+
+        <h2>Perfiles registrados</h2>
+
+        <span class="profile-count">
+          {{ perfiles.length }} perfiles
+        </span>
+
+      </div>
+
+      <div
+        class="loading-message"
+        *ngIf="cargando"
+      >
+        Cargando perfiles...
+      </div>
+
+      <div
+        class="empty-message"
+        *ngIf="!cargando && perfiles.length === 0"
+      >
+        No hay perfiles registrados.
+      </div>
+
+      <div
+        class="table-responsive"
+        *ngIf="!cargando && perfiles.length > 0"
+      >
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Código</th>
+              <th>Perfil</th>
+              <th>Descripción</th>
+              <th>Permisos</th>
+              <th>Creación</th>
+              <th>Modificación</th>
+
+              <th *ngIf="puedeEditar || puedeEliminar">
+                Acciones
+              </th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let perfil of perfiles">
+
+              <td data-label="Código">
+                <span class="code-badge">
+                  {{ perfil.SCodigo }}
+                </span>
+              </td>
+
+              <td data-label="Perfil">
+                {{ perfil.SPerfil }}
+              </td>
+
+              <td
+                class="description-cell"
+                data-label="Descripción"
+              >
+                {{ perfil.SDescripcion || '-' }}
+              </td>
+
+              <td
+                class="permissions-cell"
+                data-label="Permisos"
+              >
+                {{ obtenerCodigosPermisos(perfil.APermisos) }}
+              </td>
+
+              <td data-label="Creación">
+                {{ perfil.TFechaCap || '-' }}
+              </td>
+
+              <td data-label="Modificación">
+                {{ perfil.TFechaMod || '-' }}
+              </td>
+
+              <td
+                class="actions"
+                data-label="Acciones"
+                *ngIf="puedeEditar || puedeEliminar"
+              >
+
+                <button
+                  type="button"
+                  class="edit-button"
+                  title="Editar perfil"
+                  *ngIf="puedeEditar"
+                  (click)="seleccionarPerfil(perfil)"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  title="Eliminar perfil"
+                  *ngIf="puedeEliminar"
+                  (click)="eliminarPerfil(perfil)"
+                >
+                  <i class="bi bi-trash-fill"></i>
+                  Eliminar
+                </button>
+
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>

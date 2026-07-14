@@ -1,11 +1,16 @@
 :host {
   display: block;
+  width: 100%;
+  min-width: 0;
 }
 
 .products-page {
   width: 100%;
+  min-width: 0;
   max-width: 1500px;
   margin: 0 auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -26,19 +31,36 @@
   color: #6b7280;
 }
 
+.page-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .products-layout {
   display: grid;
   grid-template-columns: minmax(280px, 350px) minmax(0, 1fr);
   align-items: start;
+  width: 100%;
+  min-width: 0;
   gap: 24px;
+}
+
+.products-layout.only-table {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .form-card,
 .table-card {
+  width: 100%;
+  min-width: 0;
   padding: 24px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 }
 
 .form-card h2,
@@ -71,6 +93,7 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   box-sizing: border-box;
+  font-family: inherit;
   font-size: 15px;
   outline: none;
 }
@@ -84,12 +107,15 @@
   display: block;
   margin-top: 5px;
   color: #dc2626;
+  font-size: 12px;
 }
 
-.form-actions {
+.form-actions,
+.actions {
   display: flex;
   gap: 10px;
 }
+
 .form-actions button,
 .page-actions button,
 .edit-button,
@@ -103,6 +129,9 @@
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .save-button {
@@ -120,9 +149,35 @@
   background-color: #e5e7eb;
 }
 
+.cancel-button:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+.pdf-button {
+  color: #ffffff;
+  background-color: #dc2626;
+}
+
+.pdf-button:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.excel-button {
+  color: #ffffff;
+  background-color: #15803d;
+}
+
+.excel-button:hover:not(:disabled) {
+  background-color: #166534;
+}
+
 .refresh-button {
   color: #ffffff;
   background-color: #0f766e;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #115e59;
 }
 
 .edit-button {
@@ -130,9 +185,17 @@
   background-color: #d97706;
 }
 
+.edit-button:hover:not(:disabled) {
+  background-color: #b45309;
+}
+
 .delete-button {
   color: #ffffff;
   background-color: #dc2626;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #b91c1c;
 }
 
 button:disabled {
@@ -175,11 +238,14 @@ button:disabled {
 
 .table-responsive {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
 }
 
 table {
   width: 100%;
+  min-width: 950px;
   border-collapse: collapse;
 }
 
@@ -188,13 +254,15 @@ td {
   padding: 12px 10px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
-  white-space: nowrap;
+  vertical-align: middle;
 }
 
 th {
   color: #374151;
   background-color: #f9fafb;
   font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 td {
@@ -202,9 +270,35 @@ td {
   font-size: 14px;
 }
 
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.code-badge {
+  display: inline-block;
+  padding: 5px 8px;
+  color: #1d4ed8;
+  background-color: #dbeafe;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.price-cell {
+  color: #166534;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .actions {
-  display: flex;
-  gap: 7px;
+  min-width: 190px;
+  white-space: nowrap;
 }
 
 .loading-message,
@@ -214,29 +308,70 @@ td {
   text-align: center;
 }
 
+/*
+ * En pantallas medianas el formulario se coloca
+ * arriba y la tabla debajo.
+ */
 @media (max-width: 1050px) {
   .products-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-@media (max-width: 650px) {
+/*
+ * Ajustes para tablet.
+ */
+@media (max-width: 750px) {
   .page-header {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .refresh-button {
-    width: 100%;
+  .page-actions {
+    justify-content: stretch;
+  }
+
+  .page-actions button {
+    flex: 1;
   }
 
   .form-card,
   .table-card {
     padding: 18px;
   }
+}
+
+/*
+ * En teléfonos la tabla se convierte en tarjetas.
+ */
+@media (max-width: 650px) {
+  .products-page {
+    overflow-x: visible;
+  }
+
+  .page-actions,
+  .form-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .page-actions button,
+  .form-actions button {
+    width: 100%;
+  }
+
+  .table-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
   .table-responsive {
     overflow: visible;
+  }
+
+  table {
+    width: 100%;
+    min-width: 0;
   }
 
   table,
@@ -252,32 +387,74 @@ td {
     display: none;
   }
 
+  tbody {
+    width: 100%;
+  }
+
   tr {
+    width: 100%;
     margin-bottom: 16px;
     padding: 12px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
+    box-sizing: border-box;
+    background-color: #ffffff;
   }
 
   td {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
     gap: 15px;
     padding: 9px 0;
+    border-bottom: 1px solid #f1f5f9;
+    box-sizing: border-box;
     white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  td:last-child {
+    border-bottom: none;
   }
 
   td::before {
     content: attr(data-label);
+    flex: 0 0 105px;
     color: #374151;
     font-weight: 700;
   }
 
   .actions {
+    min-width: 0;
     flex-wrap: wrap;
+    white-space: normal;
   }
 
   .actions button {
     flex: 1;
+  }
+}
+
+/*
+ * Ajustes para teléfonos muy pequeños.
+ */
+@media (max-width: 420px) {
+  td {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  td::before {
+    flex-basis: auto;
+  }
+
+  .actions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .actions button {
+    width: auto;
   }
 }

@@ -73,4 +73,34 @@ export class StorageService {
     localStorage.removeItem(this.PERFIL_KEY);
     localStorage.removeItem(this.PERMISOS_KEY);
   }
+  tienePermiso(codigo: string): boolean {
+    const permisos = this.obtenerPermisos();
+
+    return permisos.some(
+      permiso =>
+        permiso.SCodigo.toUpperCase() === codigo.toUpperCase()
+    );
+  }
+
+  obtenerRutaInicial(): string {
+
+    if (this.tienePermiso('PROD_VIEW')) {
+      return '/dashboard/productos';
+    }
+
+    if (this.tienePermiso('PERMISSION_VIEW')) {
+      return '/dashboard/permisos';
+    }
+
+    if (this.tienePermiso('PROFILE_VIEW')) {
+      return '/dashboard/perfiles';
+    }
+
+    if (this.tienePermiso('USER_VIEW')) {
+      return '/dashboard/usuarios';
+    }
+
+    return '/login';
+  }
+  
 }

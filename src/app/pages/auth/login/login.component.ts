@@ -11,7 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../models/login.model';
-
+import { StorageService } from '../../../core/services/storage.service';
 @Component({
   selector: 'app-login',
   imports: [
@@ -32,6 +32,7 @@ export class LoginComponent {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
+    private storageService: StorageService,
     private router: Router
   ) {
     this.loginForm = this.formBuilder.group({
@@ -58,7 +59,9 @@ export class LoginComponent {
     this.authService.login(datos).subscribe({
       next: () => {
         this.cargando = false;
-        this.router.navigate(['/dashboard']);
+        const rutaInicial =
+        this.storageService.obtenerRutaInicial();
+        this.router.navigateByUrl(rutaInicial);
       },
       error: (error: HttpErrorResponse) => {
         this.cargando = false;

@@ -1,17 +1,16 @@
 export interface Perfil {
+  id: string;
+  SCodigo: string;
+  SPerfil: string;
+  SDescripcion: string | null;
+  APermisos: string[];
+  TFechaCap: string | null;
+  TFechaMod: string | null;
+}
 
-    id:string;
-
-    SCodigo:string;
-
-    SPerfil:string;
-
-    SDescripcion:string;
-
-    APermisos:string[];
-
-    TFechaCap:string;
-
-    TFechaMod:string;
-
+export interface PerfilRequest {
+  SCodigo: string;
+  SPerfil: string;
+  SDescripcion: string | null;
+  APermisos: string[];
 }

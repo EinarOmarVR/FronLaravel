@@ -16,6 +16,7 @@ import {
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { StorageService } from '../../core/services/storage.service';
 @Component({
   selector: 'app-productos',
   imports: [
@@ -37,10 +38,12 @@ export class ProductosComponent implements OnInit {
 
   mensajeExito: string = '';
   mensajeError: string = '';
-
+  puedeEditar: boolean = false;
+  puedeEliminar: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
-    private productosService: ProductosService
+    private productosService: ProductosService,
+    private storageService: StorageService
   ) {
     this.productoForm = this.formBuilder.group({
       SProducto: [
@@ -66,6 +69,8 @@ export class ProductosComponent implements OnInit {
         ]
       ]
     });
+    this.puedeEditar = this.storageService.tienePermiso('PROD_AddUpd');
+    this.puedeEliminar =this.storageService.tienePermiso('PROD_DELETE');
   }
 
   ngOnInit(): void {
