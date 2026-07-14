@@ -9,6 +9,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   message: string;
+  requiereCambioPassword: boolean;
   token: string;
   usuario: Usuario;
   perfil: Perfil;

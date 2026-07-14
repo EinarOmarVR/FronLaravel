@@ -13,7 +13,7 @@
     <button
       type="button"
       class="menu-button"
-      aria-label="Abrir menú"
+      aria-label="Abrir o cerrar menú"
       [attr.aria-expanded]="menuAbierto"
       (click)="cambiarMenu()"
     >
@@ -30,20 +30,22 @@
   >
 
     <a
-     *ngIf="puedeVerProductos"
+      *ngIf="puedeVerProductos"
       routerLink="/dashboard/productos"
       routerLinkActive="active"
       (click)="cerrarMenu()"
     >
+      <i class="fa-solid fa-box"></i>
       Productos
     </a>
 
     <a
-     *ngIf="puedeVerUsuarios"
+      *ngIf="puedeVerUsuarios"
       routerLink="/dashboard/usuarios"
       routerLinkActive="active"
       (click)="cerrarMenu()"
     >
+      <i class="fa-solid fa-users"></i>
       Usuarios
     </a>
 
@@ -53,6 +55,7 @@
       routerLinkActive="active"
       (click)="cerrarMenu()"
     >
+      <i class="fa-solid fa-id-card"></i>
       Perfiles
     </a>
 
@@ -62,6 +65,7 @@
       routerLinkActive="active"
       (click)="cerrarMenu()"
     >
+      <i class="fa-solid fa-key"></i>
       Permisos
     </a>
 
@@ -72,36 +76,72 @@
     [class.open]="menuAbierto"
   >
 
-    <div
-      class="user-photo"
-      *ngIf="usuario?.SFotoPerfil && mostrarFoto; else userInitial"
-    >
-      <img
-        [src]="usuario?.SFotoPerfil"
-        [alt]="usuario?.SNombre || 'Usuario'"
-        (error)="ocultarFoto()"
+    <div class="user-identity">
+
+      <div
+        class="user-photo"
+        *ngIf="
+          usuario?.SFotoPerfil &&
+          mostrarFoto;
+          else userInitial
+        "
       >
+        <img
+          [src]="usuario?.SFotoPerfil"
+          [alt]="usuario?.SNombre || 'Usuario'"
+          (error)="ocultarFoto()"
+        >
+      </div>
+
+      <ng-template #userInitial>
+        <div class="user-initial">
+          {{ obtenerInicial() }}
+        </div>
+      </ng-template>
+
+      <div class="user-data">
+
+        <span class="user-name">
+          {{ usuario?.SNombre || 'Usuario' }}
+        </span>
+
+        <span class="user-email">
+          {{ usuario?.SUsuario || '' }}
+        </span>
+
+      </div>
+
     </div>
 
-    <ng-template #userInitial>
-      <div class="user-initial">
-        {{ obtenerInicial() }}
-      </div>
-    </ng-template>
-
-    <div class="user-data">
-
-      <span class="user-name">
-        {{ usuario?.SNombre || 'Usuario' }}
-      </span>
+    <div class="account-actions">
 
       <a
-        class="profile-button"
+        class="account-link"
         routerLink="/dashboard/mi-perfil"
+        routerLinkActive="active"
         (click)="cerrarMenu()"
       >
+        <i class="fa-solid fa-user-pen"></i>
         Mi perfil
       </a>
+
+
+      <button
+        type="button"
+        class="logout-button"
+        [disabled]="cerrandoSesion"
+        (click)="cerrarSesion()"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        <span *ngIf="!cerrandoSesion">
+          Cerrar sesión
+        </span>
+
+        <span *ngIf="cerrandoSesion">
+          Cerrando...
+        </span>
+      </button>
 
     </div>
 

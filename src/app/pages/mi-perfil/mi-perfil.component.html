@@ -1,1 +1,210 @@
-<p>mi-perfil works!</p>
+<section class="profile-page">
+
+  <div
+    class="loading-message"
+    *ngIf="cargando"
+  >
+    Cargando perfil...
+  </div>
+
+  <div
+    class="profile-card"
+    *ngIf="!cargando"
+  >
+
+    <div class="profile-header">
+      <h1>Mi perfil</h1>
+
+      <p>
+        Actualiza tu información personal.
+      </p>
+    </div>
+
+    <div
+      class="success-message"
+      *ngIf="mensajeExito"
+    >
+      {{ mensajeExito }}
+    </div>
+
+    <div
+      class="error-message"
+      *ngIf="mensajeError"
+    >
+      {{ mensajeError }}
+    </div>
+
+    <form
+      [formGroup]="perfilForm"
+      (ngSubmit)="guardarPerfil()"
+    >
+
+      <div class="photo-section">
+
+        <div class="photo-preview">
+
+          <img
+            *ngIf="vistaPreviaFoto; else inicial"
+            [src]="vistaPreviaFoto"
+            [alt]="usuario?.SNombre || 'Usuario'"
+          >
+
+          <ng-template #inicial>
+            <span>
+              {{ obtenerInicial() }}
+            </span>
+          </ng-template>
+
+        </div>
+
+        <label
+          class="photo-button"
+          for="SFotoPerfil"
+        >
+          <i class="fa-solid fa-camera"></i>
+          Cambiar fotografía
+        </label>
+
+        <input
+          id="SFotoPerfil"
+          class="file-input"
+          type="file"
+          accept=".jpg,.jpeg,.png"
+          (change)="seleccionarFoto($event)"
+        >
+
+        <small class="help-text">
+          JPG o PNG, máximo 2 MB.
+        </small>
+
+      </div>
+
+      <div class="readonly-grid">
+
+        <div class="information-item">
+          <span>Código</span>
+          <strong>
+            {{ usuario?.SCodigo || '-' }}
+          </strong>
+        </div>
+
+        <div class="information-item">
+          <span>Correo</span>
+          <strong>
+            {{ usuario?.SUsuario || '-' }}
+          </strong>
+        </div>
+
+        <div class="information-item">
+          <span>Perfil</span>
+          <strong>
+            {{ perfil?.SPerfil || '-' }}
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="SNombre">
+          Nombre
+        </label>
+
+        <input
+          id="SNombre"
+          type="text"
+          formControlName="SNombre"
+          maxlength="255"
+          placeholder="Nombre completo"
+        >
+
+        <small
+          class="validation-error"
+          *ngIf="
+            perfilForm.controls['SNombre'].invalid &&
+            perfilForm.controls['SNombre'].touched
+          "
+        >
+          El nombre es obligatorio.
+        </small>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="STelefono">
+          Teléfono
+        </label>
+
+        <div class="phone-field">
+
+          <select
+            formControlName="SCodigoPais"
+            aria-label="Código de país"
+          >
+            <option
+              *ngFor="let item of codigosPais"
+              [value]="item.codigo"
+            >
+              {{ item.codigo }} - {{ item.pais }}
+            </option>
+          </select>
+
+          <input
+            id="STelefono"
+            type="tel"
+            formControlName="STelefono"
+            placeholder="7712405415"
+            inputmode="numeric"
+            maxlength="15"
+          >
+
+        </div>
+
+        <small class="help-text">
+          Incluye únicamente el número, sin espacios ni guiones.
+        </small>
+
+        <small
+          class="validation-error"
+          *ngIf="
+            perfilForm.controls['STelefono'].invalid &&
+            perfilForm.controls['STelefono'].touched
+          "
+        >
+          Ingresa entre 7 y 15 números.
+        </small>
+
+      </div>
+
+      <div class="form-actions">
+
+        <a
+          class="password-button"
+          routerLink="/dashboard/cambiar-password"
+        >
+          <i class="fa-solid fa-lock"></i>
+          Cambiar contraseña
+        </a>
+
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="guardando"
+        >
+          <i class="fa-solid fa-floppy-disk"></i>
+
+          {{
+            guardando
+              ? 'Guardando...'
+              : 'Guardar cambios'
+          }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</section>

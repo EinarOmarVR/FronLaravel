@@ -1,0 +1,241 @@
+<section class="register-page">
+
+  <div class="register-card">
+
+    <header class="register-header">
+      <div class="header-icon">
+        <i class="fa-solid fa-user-plus"></i>
+      </div>
+
+      <h1>Crear cuenta</h1>
+
+      <p>
+        Completa tus datos para registrarte.
+      </p>
+    </header>
+
+    <div
+      class="success-message"
+      *ngIf="mensajeExito"
+    >
+      {{ mensajeExito }}
+    </div>
+
+    <div
+      class="error-message"
+      *ngIf="mensajeError"
+    >
+      {{ mensajeError }}
+    </div>
+
+    <form
+      [formGroup]="registroForm"
+      (ngSubmit)="registrar()"
+    >
+
+      <div class="photo-section">
+
+        <div class="photo-preview">
+
+          <img
+            *ngIf="vistaPreviaFoto; else photoIcon"
+            [src]="vistaPreviaFoto"
+            alt="Vista previa de la fotografía"
+          >
+
+          <ng-template #photoIcon>
+            <i class="fa-solid fa-user"></i>
+          </ng-template>
+
+        </div>
+
+        <label
+          for="SFotoPerfil"
+          class="photo-button"
+        >
+          <i class="fa-solid fa-camera"></i>
+          Seleccionar fotografía
+        </label>
+
+        <input
+          id="SFotoPerfil"
+          class="file-input"
+          type="file"
+          accept=".jpg,.jpeg,.png"
+          (change)="seleccionarFoto($event)"
+        >
+
+        <small class="help-text">
+          Fotografía obligatoria. JPG o PNG, máximo 2 MB.
+        </small>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="SNombre">
+          Nombre completo
+        </label>
+
+        <input
+          id="SNombre"
+          type="text"
+          formControlName="SNombre"
+          placeholder="Escribe tu nombre"
+        >
+
+        <small
+          class="validation-error"
+          *ngIf="
+            registroForm.controls['SNombre'].invalid &&
+            registroForm.controls['SNombre'].touched
+          "
+        >
+          El nombre es obligatorio.
+        </small>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="SUsuario">
+          Correo electrónico
+        </label>
+
+        <input
+          id="SUsuario"
+          type="email"
+          formControlName="SUsuario"
+          placeholder="correo@ejemplo.com"
+          autocomplete="email"
+        >
+
+        <small
+          class="validation-error"
+          *ngIf="
+            registroForm.controls['SUsuario'].invalid &&
+            registroForm.controls['SUsuario'].touched
+          "
+        >
+          Ingresa un correo válido.
+        </small>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="SPassword">
+          Contraseña
+        </label>
+
+        <div class="password-field">
+
+          <input
+            id="SPassword"
+            [type]="mostrarPassword ? 'text' : 'password'"
+            formControlName="SPassword"
+            placeholder="Escribe una contraseña"
+            autocomplete="new-password"
+          >
+
+          <button
+            type="button"
+            aria-label="Mostrar u ocultar contraseña"
+            (click)="cambiarVisibilidadPassword()"
+          >
+            <i
+              class="fa-solid"
+              [class.fa-eye]="!mostrarPassword"
+              [class.fa-eye-slash]="mostrarPassword"
+            ></i>
+          </button>
+
+        </div>
+
+        <small class="help-text">
+          Mínimo 8 caracteres, mayúscula, minúscula,
+          número y símbolo.
+        </small>
+
+        <small
+          class="validation-error"
+          *ngIf="
+            registroForm.controls['SPassword'].invalid &&
+            registroForm.controls['SPassword'].touched
+          "
+        >
+          La contraseña no cumple los requisitos.
+        </small>
+
+      </div>
+
+      <div class="form-group">
+
+        <label for="STelefono">
+          Teléfono opcional
+        </label>
+
+        <div class="phone-field">
+
+          <select
+            formControlName="SCodigoPais"
+            aria-label="Código de país"
+          >
+            <option
+              *ngFor="let item of codigosPais"
+              [value]="item.codigo"
+            >
+              {{ item.codigo }} - {{ item.pais }}
+            </option>
+          </select>
+
+          <input
+            id="STelefono"
+            type="tel"
+            formControlName="STelefono"
+            placeholder="7712405415"
+            inputmode="numeric"
+            maxlength="15"
+          >
+
+        </div>
+
+        <small
+          class="validation-error"
+          *ngIf="
+            registroForm.controls['STelefono'].invalid &&
+            registroForm.controls['STelefono'].touched
+          "
+        >
+          Ingresa entre 7 y 15 números.
+        </small>
+
+      </div>
+
+      <button
+        type="submit"
+        class="register-button"
+        [disabled]="registrando"
+      >
+        <i class="fa-solid fa-user-plus"></i>
+
+        {{
+          registrando
+            ? 'Registrando...'
+            : 'Crear cuenta'
+        }}
+      </button>
+
+      <div class="login-link">
+        <span>¿Ya tienes una cuenta?</span>
+
+        <a routerLink="/login">
+          Inicia sesión
+        </a>
+      </div>
+
+    </form>
+
+  </div>
+
+</section>

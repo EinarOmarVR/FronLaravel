@@ -39,7 +39,9 @@ export class UsuariosService {
     );
   }
 
-  obtenerUsuario(id: string): Observable<UsuarioResponse> {
+  obtenerUsuario(
+    id: string
+  ): Observable<UsuarioResponse> {
     return this.http.get<UsuarioResponse>(
       `${this.apiUrl}/GetUsuario/${id}`
     );
@@ -69,6 +71,21 @@ export class UsuariosService {
   ): Observable<MensajeResponse> {
     return this.http.delete<MensajeResponse>(
       `${this.apiUrl}/DeleteUsuario/${id}`
+    );
+  }
+
+  obtenerMiPerfil(): Observable<UsuarioResponse> {
+    return this.http.get<UsuarioResponse>(
+      `${this.apiUrl}/MiPerfil`
+    );
+  }
+
+  actualizarMiPerfil(
+    datos: FormData
+  ): Observable<OperacionUsuarioResponse> {
+    return this.http.post<OperacionUsuarioResponse>(
+      `${this.apiUrl}/ActualizarMiPerfil`,
+      datos
     );
   }
 }
